@@ -31,15 +31,12 @@ void BlockCipher::encrypt(const string &inputFileName, const string &outputFileN
         exit(1);
     }   
 
-    // Read key file content into a string
-    std::string key;
-    char keyChar;
-    while (keyFile.get(keyChar)) {
-        key += keyChar;
-    }
-    keyFile.close();
+    // Check key size
+    keyFile.seekg(0, keyFile.end);
+    size_t keySize = keyFile.tellg();
+    keyFile.seekg(0, keyFile.beg);
 
-    if (key.size() != BLOCK_SIZE) {
+    if (keySize != BLOCK_SIZE) {
         cerr << "Blockcipher.cpp: Key size should be " << BLOCK_SIZE << " bytes.\n";
         exit(1);
     }
@@ -58,10 +55,18 @@ void BlockCipher::encrypt(const string &inputFileName, const string &outputFileN
         }
 
         // Encrypt using XOR
-        xorWithKey(block, key);
+        xorWithKey(block, keyFile);
+
+        // Reset keyFile stream state due to alterations in reverseSwapBytes()
+        keyFile.clear();
+        keyFile.seekg(0, ios::beg);
 
         // Swap bytes
-        swapBytes(block, key);
+        swapBytes(block, keyFile);
+
+        // Reset keyFile stream state due to alterations in reverseSwapBytes()
+        keyFile.clear();
+        keyFile.seekg(0, ios::beg);
 
         // Write to the output file
         outputFile.write(block, BLOCK_SIZE);
