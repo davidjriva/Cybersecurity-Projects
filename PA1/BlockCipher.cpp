@@ -23,7 +23,7 @@ void BlockCipher::createBlockCipher(const string &inputFileName, const string &o
 // pad (if required) --> encrypt (using XOR) --> swap bytes
 void BlockCipher::encrypt(const string &inputFileName, const string &outputFileName, const string &keyFileName) {
     ifstream inputFile(inputFileName);
-    ofstream outputFile(outputFileName);
+    ofstream outputFile(outputFileName, std::ios::binary);
     ifstream keyFile(keyFileName);
 
     if (!inputFile || !outputFile || !keyFile) {
@@ -32,50 +32,39 @@ void BlockCipher::encrypt(const string &inputFileName, const string &outputFileN
     }   
 
     // Check key size
-    keyFile.seekg(0, keyFile.end);
-    size_t keySize = keyFile.tellg();
-    keyFile.seekg(0, keyFile.beg);
+    std::stringstream buffer;
+    buffer << keyFile.rdbuf();
+    keyFile.close();
 
-    if (keySize != BLOCK_SIZE) {
+    std::string key = buffer.str();
+
+    if (key.size() != BLOCK_SIZE) {
         cerr << "Blockcipher.cpp: Key size should be " << BLOCK_SIZE << " bytes.\n";
         exit(1);
     }
-
+    
     char block[BLOCK_SIZE];
-
-    while (inputFile.good()) {
+    std::string output = "";
+    while (inputFile.peek() != EOF || inputFile) {
         // Read a block
         readBlock(inputFile, block);
-
-        // If a block only has padding then break out of the loop.
-        // This occurs when the message read in the previous round 
-        // is exactly the BLOCK_SIZE meaning that no EOF bit is set
+        
         if (isPadding(block, BLOCK_SIZE)) {
             break;
         }
 
         // Encrypt using XOR
-        xorWithKey(block, keyFile);
-
-        // Reset keyFile stream state due to alterations in reverseSwapBytes()
-        keyFile.clear();
-        keyFile.seekg(0, ios::beg);
+        xorWithKey(block, key);
 
         // Swap bytes
-        swapBytes(block, keyFile);
+        swapBytes(block, key);
 
-        // Reset keyFile stream state due to alterations in reverseSwapBytes()
-        keyFile.clear();
-        keyFile.seekg(0, ios::beg);
-
-        // Write to the output file
         outputFile.write(block, BLOCK_SIZE);
     }
 
     // Close files
     inputFile.close();
     outputFile.close();
-    keyFile.close();
 }
 
 void BlockCipher::decrypt(const string &inputFileName, const string &outputFileName, const string &keyFileName) {
@@ -89,11 +78,13 @@ void BlockCipher::decrypt(const string &inputFileName, const string &outputFileN
     }   
 
     // Check key size
-    keyFile.seekg(0, keyFile.end);
-    size_t keySize = keyFile.tellg();
-    keyFile.seekg(0, keyFile.beg);
+    std::stringstream buffer;
+    buffer << keyFile.rdbuf();
+    keyFile.close();
 
-    if (keySize != BLOCK_SIZE) {
+    std::string key = buffer.str();
+
+    if (key.size() != BLOCK_SIZE) {
         cerr << "Blockcipher.cpp: Key size should be " << BLOCK_SIZE << " bytes.\n";
         exit(1);
     }
@@ -112,13 +103,13 @@ void BlockCipher::decrypt(const string &inputFileName, const string &outputFileN
         }
 
         // Reverse swap bytes
-        swapBytes(block, keyFile);
+        swapBytes(block, key);
 
         // Reset keyFile stream state due to alterations in reverseSwapBytes()
         keyFile.clear();
         keyFile.seekg(0, ios::beg);
 
-        xorWithKey(block, keyFile);
+        xorWithKey(block, key);
 
         // Reset keyFile stream state due to alterations in reverseSwapBytes()
         keyFile.clear();
@@ -170,6 +161,9 @@ void BlockCipher::printBlockHex(const char *block, size_t blockSize) {
     }
 
     std::cout << "\n";
+
+    // Reset cout
+    std::cout << std::dec;
 }
 
 void BlockCipher::readBlock(ifstream &inputFile, char *block) {
@@ -188,34 +182,28 @@ void BlockCipher::readBlock(ifstream &inputFile, char *block) {
 void BlockCipher::padBlock(char *block, streamsize bytesRead) {
     // Pad with 0x81
     for (streamsize i = bytesRead; i < BLOCK_SIZE; i++) {
-        block[i] += char(128);
+        block[i] = 0x81;
     }
 }
 
-void BlockCipher::xorWithKey(char *block, ifstream &keyFile) {
-    char keyBlock[BLOCK_SIZE];
-    keyFile.read(keyBlock, BLOCK_SIZE);
-
+void BlockCipher::xorWithKey(char *block, const std::string &key) {
     // XOR operation
     for (int i = 0; i < BLOCK_SIZE; i++) {
-        block[i] ^= keyBlock[i];
+        block[i] ^= key[i];
     }
 }
 
-void BlockCipher::swapBytes(char *block, ifstream &keyFile) {
-    char keyChar;
-    keyFile.get(keyChar);
+void BlockCipher::swapBytes(char *block, const std::string &key) {
+    char keyChar = key[0];
 
-    
     // Establish start & end pointers
     int start = 0;
-    int end = BLOCK_SIZE - 1;
+    int end = 15;
 
     while (start < end) {
-        cout << "keyChar= " << keyChar << std::endl;
         // Check if ASCII val of the key char is even or odd
-        bool shouldSwap = (static_cast<int>(keyChar) % 2 == 1);
-
+        bool shouldSwap = (int(keyChar) % 2 == 1);
+        
         if (shouldSwap) {
             // Swap bytes
             char placeHolder = block[end];
@@ -230,14 +218,6 @@ void BlockCipher::swapBytes(char *block, ifstream &keyFile) {
         ++start;
 
         // Read the next key character
-        keyFile.get(keyChar);
-
-        // Restart from the first byte of the keyfile if it has been exhausted
-        if (keyFile.eof()) {
-            cout << "END OF KEY FILE!" << std::endl;
-            // Clear the EOF flag and reset to the beginning
-            keyFile.clear();
-            keyFile.seekg(0, std::ios::beg);
-        }
+        keyChar = key[start % key.size()];
     }
 }
