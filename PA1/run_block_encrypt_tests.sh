@@ -6,9 +6,9 @@ do
 
     hexdump -C ./Text-Files/tmp.txt > ./Text-Files/tmp2.txt
     if diff_output=$(diff ./Text-Files/tmp2.txt ./Test-Cases/Block-Cipher/"$number"/bc-encrypted-output-hexdump-tc-"$number".txt); then
-        echo "Encryption test $number: No differences found."
+        echo "Block Encryption test $number: No differences found."
     else
-        echo "Encryption test $number: Differences found:"
+        echo "Block Encryption test $number: Differences found:"
         echo "$diff_output"
     fi
 done
