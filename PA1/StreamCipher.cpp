@@ -23,8 +23,19 @@ void StreamCipher::encrypt(const string &inputFileName, const string &outputFile
     ofstream outputFile(outputFileName);
     ifstream keyFile(keyFileName);
 
-    if (!inputFile || !outputFile || !keyFile) {
-        cerr << "StreamCipher.cpp: Error opening files.\n";
+    
+    if (!inputFile) {
+       cerr << "Input File Does Not Exist";
+       exit(1);
+    }
+    
+    if(!outputFile){
+        cerr << "Output File Does Not Exist";
+        exit(1);
+    }
+
+    if (!keyFile) {
+        cerr << "Key File Does Not Exist";
         exit(1);
     }
 

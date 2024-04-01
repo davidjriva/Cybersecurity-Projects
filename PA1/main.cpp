@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
         StreamCipher streamCipher;
         streamCipher.createStreamCipher(inputFileName, outputFileName, keyFileName, modeOfOperation);
     } else {
-        cerr << "main.cpp: cipher type " << cipherType << " is undefined.";
+        cerr << "Invalid Function Type";
         return 1;
     }
 

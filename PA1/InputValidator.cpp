@@ -11,9 +11,9 @@ void InputValidator::validateAllInputs(const string &cipherType, const string &i
 
     // Check if files exists
     //TODO: How should error checking work for outputFileName & keyFile?
-    doesFileExist(inputFileName);
-    doesFileExist(outputFileName);
-    doesFileExist(keyFileName);
+    doesFileExist(inputFileName, "Input File Does Not Exist");
+    doesFileExist(outputFileName, "Output File Does Not Exist");
+    doesFileExist(keyFileName, "Key File Does Not Exist");
 
     isKeyFileValid(keyFileName);
 
@@ -25,7 +25,7 @@ void InputValidator::validateAllInputs(const string &cipherType, const string &i
 void InputValidator::validateCipherType(const string &cipherType) {
     // Validate types are 'B' (block) or 'S' (stream)
     if (!(cipherType == "B" || cipherType == "S")) {
-        cerr << "inputValidator.cpp: the input cipher type " << cipherType << " is invalid.\n";
+        cerr << "Invalid Function Type";
         exit(1);
     }
 }
@@ -33,16 +33,16 @@ void InputValidator::validateCipherType(const string &cipherType) {
 
 void InputValidator::validateModeOfOperation(const string &modeOfOperation) {
     if (!(modeOfOperation == "E" || modeOfOperation == "D")) {
-        cerr << "inputValidator.cpp: the mode of operation " << modeOfOperation << " is invalid.\n";
+        cerr << "Invalid Mode Type";
         exit(1);
     }
 }
 
-void InputValidator::doesFileExist(const string &fileName) {
+void InputValidator::doesFileExist(const string &fileName, const string &errorMessage) {
     ifstream file(fileName);
 
     if (!file.good()) {
-        cerr << "inputValidator.cpp: the file name " << fileName << " was not found.\n";
+        cerr << errorMessage;
         exit(1);
     }
 }

@@ -26,10 +26,20 @@ void BlockCipher::encrypt(const string &inputFileName, const string &outputFileN
     ofstream outputFile(outputFileName, std::ios::binary);
     ifstream keyFile(keyFileName);
 
-    if (!inputFile || !outputFile || !keyFile) {
-        cerr << "Blockcipher.cpp: Error opening files.\n";
+    if (!inputFile) {
+       cerr << "Input File Does Not Exist";
+       exit(1);
+    }
+    
+    if(!outputFile){
+        cerr << "Output File Does Not Exist";
         exit(1);
-    }   
+    }
+
+    if (!keyFile) {
+        cerr << "Key File Does Not Exist";
+        exit(1);
+    }
 
     // Check key size
     std::stringstream buffer;
@@ -72,11 +82,22 @@ void BlockCipher::decrypt(const string &inputFileName, const string &outputFileN
     ofstream outputFile(outputFileName);
     ifstream keyFile(keyFileName);
 
-    if (!inputFile || !outputFile || !keyFile) {
-        cerr << "Blockcipher.cpp: Error opening files.\n";
-        exit(1);
-    }   
 
+    if (!inputFile) {
+       cerr << "Input File Does Not Exist";
+       exit(1);
+    }
+    
+    if(!outputFile){
+        cerr << "Output File Does Not Exist";
+        exit(1);
+    }
+
+    if (!keyFile) {
+        cerr << "Key File Does Not Exist";
+        exit(1);
+    }
+    
     // Check key size
     std::stringstream buffer;
     buffer << keyFile.rdbuf();
