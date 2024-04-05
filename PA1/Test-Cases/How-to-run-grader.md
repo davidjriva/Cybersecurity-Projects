@@ -1,14 +1,19 @@
-a. After unzipping the test cases folder, pull out submission-grader.sh from the Test-Cases folder and place submission-grader.sh in the same parent folder as your submission (`.tar.gz`) file and the `Test-Cases` folder.
+a. After unzipping the test cases folder, pull out submission-grader.sh from the Test-Cases folder and place submission-grader.sh in the same parent folder as your submission (`.tar.gz`) file and the `Test-Cases` folder. Let's say you have a directory called `PA1`. It should look like the following:
+
+	PA1/
+	├── Test-Cases
+	├── submission-grader.sh
+	├── ABC-XYZ.tar.gz
 
 b. Make sure that `submission-grader.sh` is executable (you can check this by running `ls -al` command). If it's not then run: 
 
 	chmod +x submission-grader.sh
 
-c. Your `.tar.gz` file will be given as an argument to the grader. Essentially, run it like this:
+c. Your `.tar.gz` file will be given as an argument to the grader. Essentially, run it like this while you're in the `PA1` folder as shown in step `1`:
 
-	./submission-grader.sh XYZ.tar.gz
+	./submission-grader.sh ABC-XYZ.tar.gz
 
-Where `XYZ.tar.gz` is your submission.
+Where `ABC-XYZ.tar.gz` is your submission.
 
 d. Example Output from the grader:
 

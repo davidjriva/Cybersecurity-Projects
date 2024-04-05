@@ -113,7 +113,7 @@ run_test_and_check_output() {
         echo -e "$cross_mark Execution failed with status $status"
         return 2
     else
-        if echo "$argument_parse_output" | tr '[:upper:]' '[:lower:]' | grep -Eq "$1"; then
+        if [[ "$argument_parse_output" == "$1" ]]; then
 		    echo "Output = $argument_parse_output"
 		    echo -e "$check_mark Status: PASSED (Found expected indication of failure: '$1')"
             return 0
@@ -125,14 +125,16 @@ run_test_and_check_output() {
     fi
 }
 
-argument_validation_keywords="invalid"
-file_existence_keywords="does not exist"
+cipher_type_validation_message="Invalid Function Type"
+mode_type_validation_message="Invalid Mode Type"
+input_file_validation_message="Input File Does Not Exist"
+key_file_validation_message="Key File Does Not Exist"
 
 echo -e "5. Cipher Type Argument Validation\n"
 
 argument_validation_total=0
 
-[ ! -z "$executable" ] && run_test_and_check_output "$argument_validation_keywords" "$executable_path" A Test-Cases/Block-Cipher/1/bc-input-tc-1.txt out.txt Test-Cases/Block-Cipher/1/bc-key-tc-1.txt E
+[ ! -z "$executable" ] && run_test_and_check_output "$cipher_type_validation_message" "$executable_path" A Test-Cases/Block-Cipher/1/bc-input-tc-1.txt out.txt Test-Cases/Block-Cipher/1/bc-key-tc-1.txt E
 
 if [ $? -eq 0 ]; then
         echo -e "$check_mark B/S Argument Validated\n"
@@ -145,7 +147,7 @@ fi
 
 echo -e "6. Mode of Operation Argument Validation\n"
 
-[ ! -z "$executable" ] && run_test_and_check_output "$argument_validation_keywords" "$executable_path" B Test-Cases/Block-Cipher/1/bc-input-tc-1.txt out.txt Test-Cases/Block-Cipher/1/bc-key-tc-1.txt X
+[ ! -z "$executable" ] && run_test_and_check_output "$mode_type_validation_message" "$executable_path" B Test-Cases/Block-Cipher/1/bc-input-tc-1.txt out.txt Test-Cases/Block-Cipher/1/bc-key-tc-1.txt X
 
 if [ $? -eq 0 ]; then
         echo -e "$check_mark E/D Argument Validated\n"
@@ -163,7 +165,7 @@ key_file_check_total=0
 
 echo -e "7. Input File Existence Check\n"
 
-[ ! -z "$executable" ] && run_test_and_check_output "$file_existence_keywords" "$executable_path" B xyz.txt out.txt Test-Case/Block-Cipher/1/bc-key-tc-1.txt E
+[ ! -z "$executable" ] && run_test_and_check_output "$input_file_validation_message" "$executable_path" B xyz.txt out.txt Test-Case/Block-Cipher/1/bc-key-tc-1.txt E
 
 if [ $? -eq 0 ]; then
         ((input_file_check_total+=2));
@@ -176,7 +178,7 @@ fi
 
 echo -e "8. Key File Existence Check\n"
 
-[ ! -z "$executable" ] && run_test_and_check_output "$file_existence_keywords" "$executable_path" B Test-Cases/Block-Cipher/1/bc-input-tc-1.txt out.txt xyz.txt E
+[ ! -z "$executable" ] && run_test_and_check_output "$key_file_validation_message" "$executable_path" B Test-Cases/Block-Cipher/1/bc-input-tc-1.txt out.txt xyz.txt E
 
 if [ $? -eq 0 ]; then
         ((key_file_check_total+=2));

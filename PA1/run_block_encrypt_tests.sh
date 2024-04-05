@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for number in {1..1}
+for number in {1..3}
 do
     ./cipher B ../Test-Cases/Block-Cipher/"$number"/bc-input-tc-"$number".txt ./Text-Files/tmp.txt ../Test-Cases/Block-Cipher/"$number"/bc-key-tc-"$number".txt E
 
