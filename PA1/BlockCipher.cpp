@@ -12,11 +12,8 @@ using std::swap;
 void BlockCipher::createBlockCipher(const string &inputFileName, const string &outputFileName, const string &keyFileName, const string &modeOfOperation) {
     if(modeOfOperation == "E"){
         encrypt(inputFileName, outputFileName, keyFileName);
-    } else if (modeOfOperation == "D"){
-        decrypt(inputFileName, outputFileName, keyFileName);
     } else {
-        cerr << "BlockCipher.cpp: Given mode of operation " << modeOfOperation << " is invalid.\n";
-        exit(1);
+        decrypt(inputFileName, outputFileName, keyFileName);
     }
 }
 
@@ -25,21 +22,6 @@ void BlockCipher::encrypt(const string &inputFileName, const string &outputFileN
     ifstream inputFile(inputFileName);
     ofstream outputFile(outputFileName, std::ios::binary);
     ifstream keyFile(keyFileName);
-
-    if (!inputFile) {
-       cerr << "Input File Does Not Exist";
-       exit(1);
-    }
-    
-    if(!outputFile){
-        cerr << "Output File Does Not Exist";
-        exit(1);
-    }
-
-    if (!keyFile) {
-        cerr << "Key File Does Not Exist";
-        exit(1);
-    }
 
     // Check key size
     std::stringstream buffer;
@@ -82,22 +64,6 @@ void BlockCipher::decrypt(const string &inputFileName, const string &outputFileN
     ofstream outputFile(outputFileName);
     ifstream keyFile(keyFileName);
 
-
-    if (!inputFile) {
-       cerr << "Input File Does Not Exist";
-       exit(1);
-    }
-    
-    if(!outputFile){
-        cerr << "Output File Does Not Exist";
-        exit(1);
-    }
-
-    if (!keyFile) {
-        cerr << "Key File Does Not Exist";
-        exit(1);
-    }
-    
     // Check key size
     std::stringstream buffer;
     buffer << keyFile.rdbuf();

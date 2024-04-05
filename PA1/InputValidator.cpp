@@ -12,7 +12,6 @@ void InputValidator::validateAllInputs(const string &cipherType, const string &i
     // Check if files exists
     //TODO: How should error checking work for outputFileName & keyFile?
     doesFileExist(inputFileName, "Input File Does Not Exist");
-    doesFileExist(outputFileName, "Output File Does Not Exist");
     doesFileExist(keyFileName, "Key File Does Not Exist");
 
     isKeyFileValid(keyFileName);
